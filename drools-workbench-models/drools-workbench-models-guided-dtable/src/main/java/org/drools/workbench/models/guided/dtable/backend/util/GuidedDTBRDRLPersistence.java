@@ -21,10 +21,10 @@ import java.util.regex.Pattern;
 
 import org.drools.core.util.StringUtils;
 import org.drools.workbench.models.commons.backend.rule.DRLConstraintValueBuilder;
+import org.drools.workbench.models.commons.backend.rule.GeneratorContext;
 import org.drools.workbench.models.commons.backend.rule.RuleModelDRLPersistenceImpl;
 import org.drools.workbench.models.datamodel.rule.ActionFieldValue;
 import org.drools.workbench.models.datamodel.rule.BaseSingleFieldConstraint;
-import org.drools.workbench.models.datamodel.rule.CompositeFieldConstraint;
 import org.drools.workbench.models.datamodel.rule.ExpressionFormLine;
 import org.drools.workbench.models.datamodel.rule.FieldConstraint;
 import org.drools.workbench.models.datamodel.rule.FieldNatureType;
