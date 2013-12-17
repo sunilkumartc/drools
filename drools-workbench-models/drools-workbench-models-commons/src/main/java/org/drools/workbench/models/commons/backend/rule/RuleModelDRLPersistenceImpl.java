@@ -698,7 +698,6 @@ public class RuleModelDRLPersistenceImpl
                 gctx.setFieldConstraint( constr );
                 generateConstraint( constr,
                                     gctx );
-                gctx.incrementIndex();
             }
         }
 
@@ -758,7 +757,6 @@ public class RuleModelDRLPersistenceImpl
                         nestedGctx.setFieldConstraint( nestedConstr );
                         generateConstraint( nestedConstr,
                                             nestedGctx );
-                        nestedGctx.incrementIndex();
                     }
                     gctx.setHasOutput( nestedGctx.isHasOutput() );
                     if ( gctx.getDepth() > 0 ) {

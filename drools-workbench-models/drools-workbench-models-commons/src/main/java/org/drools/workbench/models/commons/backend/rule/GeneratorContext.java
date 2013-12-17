@@ -33,7 +33,6 @@ public class GeneratorContext {
     private int offset;
     private boolean hasOutput;
     private boolean hasNonTemplateOutput;
-    private int index;
     private int childCount;
 
     GeneratorContext() {
@@ -67,14 +66,6 @@ public class GeneratorContext {
             varsInScope.add( var.getVarName() );
         }
         hasNonTemplateOutput = visitor.hasNonTemplateOutput();
-    }
-
-    public void incrementIndex() {
-        index++;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     public GeneratorContext getParent() {
