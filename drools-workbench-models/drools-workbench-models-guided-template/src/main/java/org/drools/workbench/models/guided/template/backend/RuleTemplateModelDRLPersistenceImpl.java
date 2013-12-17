@@ -110,7 +110,7 @@ public class RuleTemplateModelDRLPersistenceImpl
 
         @Override
         public void preGenerateConstraints( GeneratorContext gctx ) {
-            buf.append( "@code{hasOutput" + gctx.getDepth() + " = false}" );
+            buf.append( "@code{hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + " = false}" );
         }
 
         @Override
@@ -189,7 +189,7 @@ public class RuleTemplateModelDRLPersistenceImpl
             super.generateConstraint( constr,
                                       gctx );
             if ( generateTemplateCheck ) {
-                buf.append( "@code{hasOutput" + gctx.getDepth() + " = true}" );
+                buf.append( "@code{hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + " = true}" );
                 buf.append( "@end{}" );
             }
         }
@@ -206,7 +206,7 @@ public class RuleTemplateModelDRLPersistenceImpl
 
             boolean generateTemplateCheck = isTemplateKey( constr );
             if ( generateTemplateCheck ) {
-                buf.append( "@if{ hasOutput" + gctx.getDepth() + "}" );
+                buf.append( "@if{ hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() +  "}" );
             }
 
             preGenerateNestedConnector( gctx );
@@ -238,7 +238,7 @@ public class RuleTemplateModelDRLPersistenceImpl
 
             if ( generateTemplateCheck && operator.startsWith( "||" ) || operator.startsWith( "&&" ) ) {
                 spaceBeforeOperator = false;
-                buf.append( "@if{ hasOutput" + gctx.getDepth() + "} " );// add space here, due to split operator
+                buf.append( "@if{ hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + "} " );// add space here, due to split operator
                 buf.append( operator.substring( 0, 2 ) );
                 buf.append( "@end{}" );
                 operator = operator.substring( 2 );
@@ -247,7 +247,7 @@ public class RuleTemplateModelDRLPersistenceImpl
             super.addConnectiveFieldRestriction( buf, type, fieldType, operator, parameters, value, expression, gctx, spaceBeforeOperator );
 
             if ( generateTemplateCheck ) {
-                buf.append( "@code{hasOutput" + gctx.getDepth() + " = true}" );
+                buf.append( "@code{hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + " = true}" );
                 buf.append( "@end{}" );
             }
         }
@@ -375,6 +375,8 @@ public class RuleTemplateModelDRLPersistenceImpl
         final String ruleTemplate = marshalRule( model );
         log.debug( "ruleTemplate:\n{}",
                    ruleTemplate );
+
+        System.out.println( ruleTemplate );
 
         log.debug( "generated template:\n{}", ruleTemplate );
 

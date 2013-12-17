@@ -749,7 +749,7 @@ public class RuleModelDRLPersistenceImpl
                 CompositeFieldConstraint cfc = (CompositeFieldConstraint) con;
                 FieldConstraint[] nestedConstraints = cfc.getConstraints();
                 if ( nestedConstraints != null ) {
-                    GeneratorContext nestedGctx = new GeneratorContext( gctx );
+                    GeneratorContext nestedGctx = gctx.createChild();
                     preGenerateConstraints( nestedGctx );
                     preGenerateNestedConstraint( gctx );
                     if ( gctx.getDepth() > 0 ) {
@@ -848,7 +848,7 @@ public class RuleModelDRLPersistenceImpl
         private void generateConnectiveFieldRestriction( SingleFieldConstraint constr,
                                                          Map<String, String> parameters,
                                                          GeneratorContext gctx ) {
-            GeneratorContext cctx = new GeneratorContext( gctx );
+            GeneratorContext cctx = gctx.createChild();
             preGenerateConstraints( cctx );
             cctx.setFieldConstraint( constr );
             if ( constr instanceof SingleFieldConstraintEBLeftSide ) {
@@ -2936,15 +2936,22 @@ public class RuleModelDRLPersistenceImpl
         private FieldConstraint fieldConstraint;
         private GeneratorContext parent;
         private int depth;
+        private int offset;
         private boolean hasOutput;
         private int index;
+        private int childCount;
 
         public GeneratorContext() {
         }
 
-        public GeneratorContext( GeneratorContext parent ) {
+        private GeneratorContext( GeneratorContext parent, int depth, int offset ) {
             this.parent = parent;
-            this.depth = parent.getDepth() + 1;
+            this.depth = depth;
+            this.offset = offset;
+        }
+
+        public GeneratorContext createChild() {
+            return new GeneratorContext(this, depth+1, childCount++);
         }
 
         public FieldConstraint getFieldConstraint() {
@@ -2988,6 +2995,11 @@ public class RuleModelDRLPersistenceImpl
 
         public Set<String> getVarsInScope() {
             return this.varsInScope;
+        }
+
+
+        public int getOffset() {
+            return offset;
         }
 
     }
