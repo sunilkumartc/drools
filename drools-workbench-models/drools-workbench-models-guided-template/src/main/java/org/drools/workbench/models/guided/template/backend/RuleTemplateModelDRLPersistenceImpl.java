@@ -190,8 +190,8 @@ public class RuleTemplateModelDRLPersistenceImpl
             }
             super.generateConstraint( constr,
                                       gctx );
+            buf.append( "@code{hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + " = true}" );
             if ( generateTemplateCheck ) {
-                buf.append( "@code{hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + " = true}" );
                 buf.append( "@end{}" );
             }
         }
@@ -419,11 +419,11 @@ public class RuleTemplateModelDRLPersistenceImpl
                           isDSLEnhanced );
         this.marshalFooter( buf );
 
-        for(GeneratorContext gc : GeneratorContextFactory.getGeneratorContexts()) {
-            header.append("@code{hasNonTemplateOutput"+gc.getDepth()+"_"+gc.getOffset()+" = "+gc.hasNonTemplateOutput()+"}");
+        for ( GeneratorContext gc : GeneratorContextFactory.getGeneratorContexts() ) {
+            header.append( "@code{hasNonTemplateOutput" + gc.getDepth() + "_" + gc.getOffset() + " = " + gc.hasNonTemplateOutput() + "}" );
         }
 
-        return header.append(buf).toString();
+        return header.append( buf ).toString();
     }
 
     private DataProvider chooseDataProvider( final RuleModel model ) {
