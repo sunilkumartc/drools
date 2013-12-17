@@ -137,6 +137,20 @@ public class RuleTemplateModelDRLPersistenceImpl
                     }
                 }
                 buf.append( ") || hasNonTemplateOutput" ).append( gctx.getDepth() + "_" + gctx.getOffset() ).append( "}" );
+            } else {
+                GeneratorContext parentContext = gctx.getParent();
+                if ( parentContext != null ) {
+                    Set<String> parentVarsInScope = new HashSet<String>( parentContext.getVarsInScope() );
+                    parentVarsInScope.removeAll( gctx.getVarsInScope() );
+                    if ( parentVarsInScope.size() > 0 ) {
+                        buf.append( "@if{!(" );
+                        for ( String var : parentVarsInScope ) {
+                            buf.append( var + " == empty || " );
+                        }
+                        buf.delete( buf.length() - 4, buf.length() );
+                        buf.append( ")}" );
+                    }
+                }
             }
         }
 
@@ -144,6 +158,15 @@ public class RuleTemplateModelDRLPersistenceImpl
         public void postGenerateNestedConnector( GeneratorContext gctx ) {
             if ( gctx.getVarsInScope().size() > 0 ) {
                 buf.append( "@end{}" );
+            } else {
+                GeneratorContext parentContext = gctx.getParent();
+                if ( parentContext != null ) {
+                    Set<String> parentVarsInScope = new HashSet<String>( parentContext.getVarsInScope() );
+                    parentVarsInScope.removeAll( gctx.getVarsInScope() );
+                    if ( parentVarsInScope.size() > 0 ) {
+                        buf.append( "@end{}" );
+                    }
+                }
             }
         }
 
