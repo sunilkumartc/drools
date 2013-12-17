@@ -28,6 +28,8 @@ import org.drools.template.DataProvider;
 import org.drools.template.DataProviderCompiler;
 import org.drools.template.objects.ArrayDataProvider;
 import org.drools.workbench.models.commons.backend.rule.DRLConstraintValueBuilder;
+import org.drools.workbench.models.commons.backend.rule.GeneratorContext;
+import org.drools.workbench.models.commons.backend.rule.GeneratorContextFactory;
 import org.drools.workbench.models.commons.backend.rule.RuleModelDRLPersistenceImpl;
 import org.drools.workbench.models.commons.backend.rule.RuleModelPersistence;
 import org.drools.workbench.models.datamodel.rule.ActionFieldValue;
@@ -134,7 +136,7 @@ public class RuleTemplateModelDRLPersistenceImpl
                         buf.delete( buf.length() - 4, buf.length() );
                     }
                 }
-                buf.append( ")}" );
+                buf.append( ") || hasNonTemplateOutput" ).append( gctx.getDepth() + "_" + gctx.getOffset() ).append( "}" );
             }
         }
 
@@ -153,7 +155,7 @@ public class RuleTemplateModelDRLPersistenceImpl
                     buf.append( var + " == empty && " );
                 }
                 buf.delete( buf.length() - 4, buf.length() );
-                buf.append( ")}" );
+                buf.append( ") || hasNonTemplateOutput" ).append( gctx.getDepth() + "_" + gctx.getOffset() ).append( "}" );
             }
         }
 
@@ -206,7 +208,7 @@ public class RuleTemplateModelDRLPersistenceImpl
 
             boolean generateTemplateCheck = isTemplateKey( constr );
             if ( generateTemplateCheck ) {
-                buf.append( "@if{ hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() +  "}" );
+                buf.append( "@if{ hasOutput" + gctx.getDepth() + "_" + gctx.getOffset() + "}" );
             }
 
             preGenerateNestedConnector( gctx );
@@ -397,10 +399,11 @@ public class RuleTemplateModelDRLPersistenceImpl
         bindingsFields = new HashMap<String, FieldConstraint>();
 
         StringBuilder buf = new StringBuilder();
+        StringBuilder header = new StringBuilder();
 
         //Build rule
         this.marshalRuleHeader( model,
-                                buf );
+                                header );
         super.marshalMetadata( buf,
                                model );
         super.marshalAttributes( buf,
@@ -415,7 +418,12 @@ public class RuleTemplateModelDRLPersistenceImpl
                           model,
                           isDSLEnhanced );
         this.marshalFooter( buf );
-        return buf.toString();
+
+        for(GeneratorContext gc : GeneratorContextFactory.getGeneratorContexts()) {
+            header.append("@code{hasNonTemplateOutput"+gc.getDepth()+"_"+gc.getOffset()+" = "+gc.hasNonTemplateOutput()+"}");
+        }
+
+        return header.append(buf).toString();
     }
 
     private DataProvider chooseDataProvider( final RuleModel model ) {

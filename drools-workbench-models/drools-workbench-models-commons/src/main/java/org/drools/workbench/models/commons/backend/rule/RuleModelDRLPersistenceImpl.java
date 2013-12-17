@@ -94,11 +94,9 @@ import org.drools.workbench.models.datamodel.rule.HasParameterizedOperator;
 import org.drools.workbench.models.datamodel.rule.IAction;
 import org.drools.workbench.models.datamodel.rule.IFactPattern;
 import org.drools.workbench.models.datamodel.rule.IPattern;
-import org.drools.workbench.models.datamodel.rule.InterpolationVariable;
 import org.drools.workbench.models.datamodel.rule.RuleAttribute;
 import org.drools.workbench.models.datamodel.rule.RuleMetadata;
 import org.drools.workbench.models.datamodel.rule.RuleModel;
-import org.drools.workbench.models.datamodel.rule.RuleModelVisitor;
 import org.drools.workbench.models.datamodel.rule.SingleFieldConstraint;
 import org.drools.workbench.models.datamodel.rule.SingleFieldConstraintEBLeftSide;
 import org.drools.workbench.models.datamodel.workitems.HasBinding;
@@ -693,7 +691,7 @@ public class RuleModelDRLPersistenceImpl
         }
 
         private void generateConstraints( final FactPattern pattern ) {
-            GeneratorContext gctx = new GeneratorContext();
+            GeneratorContext gctx = GeneratorContextFactory.newGeneratorContext();
             preGenerateConstraints( gctx );
             for ( int constraintIndex = 0; constraintIndex < pattern.getFieldConstraints().length; constraintIndex++ ) {
                 FieldConstraint constr = pattern.getConstraintList().getConstraints()[ constraintIndex ];
@@ -2321,8 +2319,8 @@ public class RuleModelDRLPersistenceImpl
             }
         }
         ActionFieldValue fieldValue = new ActionFieldValue( field, adjustParam( dataType, value, isJavaDialect ), dataType );
-        if (dataType == DataType.TYPE_COLLECTION) {
-            fieldValue.setNature(FieldNatureType.TYPE_FORMULA);
+        if ( dataType == DataType.TYPE_COLLECTION ) {
+            fieldValue.setNature( FieldNatureType.TYPE_FORMULA );
         }
         return fieldValue;
     }
@@ -2930,77 +2928,4 @@ public class RuleModelDRLPersistenceImpl
         }
     }
 
-    public static class GeneratorContext {
-
-        private Set<String> varsInScope = new HashSet<String>();
-        private FieldConstraint fieldConstraint;
-        private GeneratorContext parent;
-        private int depth;
-        private int offset;
-        private boolean hasOutput;
-        private int index;
-        private int childCount;
-
-        public GeneratorContext() {
-        }
-
-        private GeneratorContext( GeneratorContext parent, int depth, int offset ) {
-            this.parent = parent;
-            this.depth = depth;
-            this.offset = offset;
-        }
-
-        public GeneratorContext createChild() {
-            return new GeneratorContext(this, depth+1, childCount++);
-        }
-
-        public FieldConstraint getFieldConstraint() {
-            return fieldConstraint;
-        }
-
-        public void setFieldConstraint( FieldConstraint fieldConstraint ) {
-            this.fieldConstraint = fieldConstraint;
-            this.varsInScope.clear();
-            Map<InterpolationVariable, Integer> vars = new HashMap<InterpolationVariable, Integer>();
-            RuleModelVisitor visitor = new RuleModelVisitor( vars );
-            visitor.visit( fieldConstraint );
-            for ( InterpolationVariable var : vars.keySet() ) {
-                varsInScope.add( var.getVarName() );
-            }
-        }
-
-        public void incrementIndex() {
-            index++;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public GeneratorContext getParent() {
-            return parent;
-        }
-
-        public int getDepth() {
-            return depth;
-        }
-
-        public boolean isHasOutput() {
-            return hasOutput;
-        }
-
-        public void setHasOutput( boolean hasOutput ) {
-            this.hasOutput = hasOutput;
-        }
-
-        public Set<String> getVarsInScope() {
-            return this.varsInScope;
-        }
-
-
-        public int getOffset() {
-            return offset;
-        }
-
-    }
 }
